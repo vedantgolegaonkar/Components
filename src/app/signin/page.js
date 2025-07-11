@@ -1,11 +1,5 @@
 'use client';
-
-import {
-  FaFacebookF,
-  FaLinkedinIn,
-  FaGoogle,
-  FaRegEnvelope,
-} from 'react-icons/fa';
+// Imports
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
@@ -16,7 +10,27 @@ import { MdLockOutline } from 'react-icons/md';
 import { IoMdClose } from 'react-icons/io';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import {
+  FaFacebookF,
+  FaLinkedinIn,
+  FaGoogle,
+  FaRegEnvelope,
+} from 'react-icons/fa';
+import {
+  companyName,
+  forgotPassword,
+  logging,
+  policy,
+  remember,
+  signIn,
+  signUpButton,
+  signUpTitle,
+  terms,
+  useEmail,
+} from '../constants/signin';
 
+
+// Define a Yup validation schema for the sign-in form
 const schema = yup.object().shape({
   identifier: yup
     .string()
@@ -56,11 +70,14 @@ const schema = yup.object().shape({
   }),
 });
 
+
+
 export default function Home() {
+
+  // Constants
   const router = useRouter();
   const [isClosing, setIsClosing] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-
   const togglePassword = () => setShowPassword((prev) => !prev);
 
   const {
@@ -73,6 +90,8 @@ export default function Home() {
     resolver: yupResolver(schema),
     mode: 'onChange', // enables real-time validation
   });
+
+  
   const identifier = watch('identifier');
   const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(identifier || '');
   const isMobile = /^\d{10}$/.test(identifier || '');
@@ -122,12 +141,12 @@ export default function Home() {
             </div>
             <div className="text-left font-bold text-xl">
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#01304C] to-[#1BEBC8]">
-                APSN Skilling LLP
+                {companyName}
               </span>
             </div>
             <div className="py-10">
               <h2 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#01304C] to-[#1BEBC8] mb-2">
-                Sign in to Account
+                {signIn}
               </h2>
               <div className="border-2 w-10 border-[#1BEBC8] inline-block mb-2"></div>
               <div className="flex justify-center my-2">
@@ -150,7 +169,7 @@ export default function Home() {
                   <FaGoogle className="text-sm" />
                 </a>
               </div>
-              <p className="text-gray-400 my-3">or use your email account</p>
+              <p className="text-gray-400 my-3">{useEmail}</p>
               <div className="flex flex-col items-center">
                 <div className="bg-gray-100 w-64 p-2 flex items-center mb-3">
                   <FaRegEnvelope className="text-gray-400 m-2" />
@@ -168,38 +187,6 @@ export default function Home() {
                     {errors.identifier.message}
                   </p>
                 )}
-
-                {/* (isMobile && (
-                    <div className="bg-gray-100 w-64 p-2 flex items-center mb-3">
-                      <MdLockOutline className="text-gray-400 m-2" />
-                      <input
-                        type="text"
-                        placeholder="Enter OTP"
-                        name="otp"
-                        autoComplete="off"
-                        {...register('otp')}
-                        className="bg-gray-100 outline-none text-sm flex-1"
-                      />
-                    </div>
-                  ) : (
-                    <div className="bg-gray-100 w-64 p-2 flex items-center relative mb-3">
-                      <MdLockOutline className="text-gray-400 m-2" />
-                      <input
-                        type={showPassword ? 'text' : 'password'}
-                        placeholder="Enter Password"
-                        name="password"
-                        autoComplete="off"
-                        {...register('password')}
-                        className="bg-gray-100 outline-none text-sm flex-1 pr-8"
-                      />
-                      <div
-                        className="absolute right-2 cursor-pointer text-gray-400"
-                        onClick={togglePassword}
-                      >
-                        {showPassword ? <RiEyeLine /> : <RiEyeCloseLine />}
-                      </div>
-                    </div>
-                  )) */}
 
                 {isEmail && (
                   <div>
@@ -260,24 +247,24 @@ export default function Home() {
                 <div className="flex justify-between w-64 mb-5 mt-2">
                   <label className="flex items-center text-sm">
                     <input type="checkbox" className="mr-1" name="remember" />
-                    Remember Me
+                    {remember}
                   </label>
                   <Link
                     href="/forget-password"
                     className="text-sm hover:underline"
                   >
-                    Forgot Password
+                    {forgotPassword}
                   </Link>
                 </div>
                 <div className="w-64 text-sm text-gray-500 mb-4">
-                  By logging in, you agree to our{' '}
+                  {logging}{' '}
                   <Link
                     href="/terms"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-[#01304C] hover:underline"
                   >
-                    Terms of Service
+                    {terms}
                   </Link>{' '}
                   and{' '}
                   <Link
@@ -286,7 +273,7 @@ export default function Home() {
                     rel="noopener noreferrer"
                     className="text-[#01304C] hover:underline"
                   >
-                    Privacy Policy
+                    {policy}
                   </Link>
                   .
                 </div>
@@ -309,14 +296,12 @@ export default function Home() {
           <div className="w-2/5 bg-gradient-to-r from-[#01304C] to-[#1BEBC8] text-white rounded-tr-2xl rounded-br-2xl py-36 px-12">
             <h2 className="text-3xl font-bold mb-2">Create. Learn. Succeed.</h2>
             <div className="border-2 w-10 border-white inline-block mb-2"></div>
-            <p className="mb-10">
-              We&apos;re excited to walk this journey with you!
-            </p>
+            <p className="mb-10">{signUpTitle}</p>
             <Link
               href="/signup"
               className="border-2 border-white rounded-full px-12 py-2 inline-block hover:bg-white hover:text-[#1BEBC8] font-semibold"
             >
-              Sign Up
+              {signUpButton}
             </Link>
           </div>
         </div>
