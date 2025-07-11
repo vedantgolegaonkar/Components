@@ -6,33 +6,54 @@ import {
   FaGoogle,
   FaRegEnvelope,
 } from 'react-icons/fa';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import * as yup from 'yup';
+import { yupResolver } from '@hookform/resolvers/yup';
+import toast, { Toaster } from 'react-hot-toast';
+import { RiEyeLine, RiEyeCloseLine } from 'react-icons/ri';
 import { MdLockOutline } from 'react-icons/md';
 import { IoMdClose } from 'react-icons/io';
-import { RiEyeLine, RiEyeCloseLine } from 'react-icons/ri';
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
-import toast, { Toaster } from 'react-hot-toast';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
-// import loginSVG from '../../../public/login-svg.svg'
-// import Image from 'next/image';
 
 const schema = yup.object().shape({
-  email: yup
+  identifier: yup
     .string()
-    .email('Invalid email format')
-    .required('Email is required'),
-  password: yup
-    .string()
-    .required('Password is required')
-    .min(8, 'Password must be at least 8 characters')
-    .max(18, 'Password must be at most 18 characters')
-    .matches(/[A-Z]/, 'Must contain an uppercase letter')
-    .matches(/[a-z]/, 'Must contain a lowercase letter')
-    .matches(/\d/, 'Must contain a number')
-    .matches(/[!@#$%^&*()]/, 'Must contain a special character (!@#$%^&*())'),
+    .required('Email or Mobile Number is required')
+    .test(
+      'is-valid',
+      'Must be a valid email or 10-digit mobile number',
+      (value) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const mobileRegex = /^\d{10}$/;
+        return emailRegex.test(value) || mobileRegex.test(value);
+      },
+    ),
+  password: yup.string().when('identifier', {
+    is: (val) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val), // If it's an email
+    then: (schema) =>
+      schema
+        .required('Password is required')
+        .min(8, 'Password must be at least 8 characters')
+        .max(18, 'Password must be at most 18 characters')
+        .matches(/[A-Z]/, 'Must contain an uppercase letter')
+        .matches(/[a-z]/, 'Must contain a lowercase letter')
+        .matches(/\d/, 'Must contain a number')
+        .matches(
+          /[!@#$%^&*()]/,
+          'Must contain a special character (!@#$%^&*())',
+        ),
+    otherwise: (schema) => schema.notRequired(),
+  }),
+  otp: yup.string().when('identifier', {
+    is: (val) => /^\d{10}$/.test(val), // If it's a mobile number
+    then: (schema) =>
+      schema
+        .required('OTP is required')
+        .matches(/^\d{6}$/, 'OTP must be a 6-digit number'),
+    otherwise: (schema) => schema.notRequired(),
+  }),
 });
 
 export default function Home() {
@@ -47,10 +68,14 @@ export default function Home() {
     handleSubmit,
     formState: { errors, isValid, isSubmitting },
     reset,
+    watch,
   } = useForm({
     resolver: yupResolver(schema),
     mode: 'onChange', // enables real-time validation
   });
+  const identifier = watch('identifier');
+  const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(identifier || '');
+  const isMobile = /^\d{10}$/.test(identifier || '');
 
   const onSubmit = async (data) => {
     try {
@@ -65,7 +90,7 @@ export default function Home() {
       // if (!res.ok) throw new Error(result.message || 'Failed to sign up');
       reset();
       router.push('/dashboard');
-      toast.success('Login Successful', { duration: 3000 }); // mock response
+      toast.success('Login Successful', { duration: 3000 });
     } catch (error) {
       toast.error('Something went wrong!', { duration: 3000 });
     }
@@ -78,7 +103,6 @@ export default function Home() {
 
   return (
     <div className="relative flex flex-col items-center justify-center min-h-screen py-2 bg-gray-200 overflow-hidden">
-      {/* <Image src={loginSVG} alt='Login' className="absolute top-[200px] left-[80px] w-130 h-130 z-0 opacity-100 pointer-events-none" priority/> */}
       <Toaster position="top-right" reverseOrder={false} />
       <main className="flex flex-col items-center justify-center w-full flex-1 px-20 text-center">
         <div
@@ -131,36 +155,103 @@ export default function Home() {
                 <div className="bg-gray-100 w-64 p-2 flex items-center mb-3">
                   <FaRegEnvelope className="text-gray-400 m-2" />
                   <input
-                    type="email"
-                    placeholder="Enter your Email"
-                    name="email"
+                    type="text"
+                    placeholder="Email or Mobile Number"
+                    name="identifier"
                     autoComplete="off"
-                    {...register('email')}
+                    {...register('identifier')}
                     className="bg-gray-100 outline-none text-sm flex-1"
                   />
                 </div>
-                {errors.email && (
+                {errors.identifier && (
                   <p className="text-red-500 text-xs mt-1 ml-2">
-                    {errors.email.message}
+                    {errors.identifier.message}
                   </p>
                 )}
-                <div className="bg-gray-100 w-64 p-2 flex items-center relative">
-                  <MdLockOutline className="text-gray-400 m-2" />
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    placeholder="Enter your Password"
-                    name="password"
-                    autoComplete="off"
-                    {...register('password')}
-                    className="bg-gray-100 outline-none text-sm flex-1 pr-8"
-                  />
-                  <div
-                    className="absolute right-2 cursor-pointer text-gray-400"
-                    onClick={togglePassword}
-                  >
-                    {showPassword ? <RiEyeLine /> : <RiEyeCloseLine />}
+
+                {/* (isMobile && (
+                    <div className="bg-gray-100 w-64 p-2 flex items-center mb-3">
+                      <MdLockOutline className="text-gray-400 m-2" />
+                      <input
+                        type="text"
+                        placeholder="Enter OTP"
+                        name="otp"
+                        autoComplete="off"
+                        {...register('otp')}
+                        className="bg-gray-100 outline-none text-sm flex-1"
+                      />
+                    </div>
+                  ) : (
+                    <div className="bg-gray-100 w-64 p-2 flex items-center relative mb-3">
+                      <MdLockOutline className="text-gray-400 m-2" />
+                      <input
+                        type={showPassword ? 'text' : 'password'}
+                        placeholder="Enter Password"
+                        name="password"
+                        autoComplete="off"
+                        {...register('password')}
+                        className="bg-gray-100 outline-none text-sm flex-1 pr-8"
+                      />
+                      <div
+                        className="absolute right-2 cursor-pointer text-gray-400"
+                        onClick={togglePassword}
+                      >
+                        {showPassword ? <RiEyeLine /> : <RiEyeCloseLine />}
+                      </div>
+                    </div>
+                  )) */}
+
+                {isEmail && (
+                  <div>
+                    <div className="bg-gray-100 w-64 p-2 flex items-center relative mb-3">
+                      <MdLockOutline className="text-gray-400 mr-2" />
+                      <input
+                        type={showPassword ? 'text' : 'password'}
+                        placeholder="Enter your password"
+                        {...register('password')}
+                        className="bg-gray-100 outline-none text-sm flex-1 pr-8"
+                        autoComplete="off"
+                      />
+                      <div
+                        className="absolute right-2 cursor-pointer text-gray-400"
+                        onClick={togglePassword}
+                      >
+                        {showPassword ? <RiEyeLine /> : <RiEyeCloseLine />}
+                      </div>
+                    </div>
+                    {errors.password && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {errors.password.message}
+                      </p>
+                    )}
                   </div>
-                </div>
+                )}
+
+                {isMobile && (
+                  <div>
+                    <div className="bg-gray-100 w-64 p-2 flex items-center relative mb-3">
+                      <MdLockOutline className="text-gray-400 mr-2" />
+                      <input
+                        type={showPassword ? 'text' : 'password'}
+                        placeholder="Enter 6-digit OTP"
+                        {...register('otp')}
+                        className="bg-gray-100 outline-none text-sm flex-1 pr-8"
+                        autoComplete="off"
+                      />
+                      <div
+                        className="absolute right-2 cursor-pointer text-gray-400"
+                        onClick={togglePassword}
+                      >
+                        {showPassword ? <RiEyeLine /> : <RiEyeCloseLine />}
+                      </div>
+                    </div>
+                    {errors.otp && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {errors.otp.message}
+                      </p>
+                    )}
+                  </div>
+                )}
                 {errors.password && (
                   <p className="text-red-500 text-xs mt-1 ml-2">
                     {errors.password.message}
