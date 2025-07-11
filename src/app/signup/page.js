@@ -18,35 +18,49 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { IoMdClose } from 'react-icons/io';
 
-const schema = yup.object().shape({
-  fullName: yup.string().required('Full name is required'),
-  email: yup.string().email('Invalid email').notRequired(),
-  password: yup
-    .string()
-    .required('Password is required')
-    .min(8, 'Min 8 characters')
-    .max(18, 'Max 18 characters')
-    .matches(/[A-Z]/, 'Must contain uppercase letter')
-    .matches(/[a-z]/, 'Must contain lowercase letter')
-    .matches(/\d/, 'Must contain a number')
-    .matches(/[!@#$%^&*()]/, 'Must contain special character'),
-  confirmPassword: yup
-    .string()
-    .required('Password is required')
-    .min(8, 'Min 8 characters')
-    .max(18, 'Max 18 characters')
-    .matches(/[A-Z]/, 'Must contain uppercase letter')
-    .matches(/[a-z]/, 'Must contain lowercase letter')
-    .matches(/\d/, 'Must contain a number')
-    .matches(/[!@#$%^&*()]/, 'Must contain special character'),
-  mobile: yup
-    .string()
-    .matches(/^[0-9]{10}$/, 'Invalid mobile number')
-    .notRequired(),
-  country: yup.string().required('Country is required'),
-  state: yup.string().required('State is required'),
-  city: yup.string().required('City is required'),
-});
+const schema = yup
+  .object()
+  .shape({
+    fullName: yup.string().required('Full name is required'),
+    email: yup
+      .string()
+      .email('Invalid email')
+      .nullable()
+      .transform((value, originalValue) =>
+        originalValue === '' ? null : value,
+      ),
+    password: yup
+      .string()
+      .required('Password is required')
+      .min(8, 'Min 8 characters')
+      .max(18, 'Max 18 characters')
+      .matches(/[A-Z]/, 'Must contain uppercase letter')
+      .matches(/[a-z]/, 'Must contain lowercase letter')
+      .matches(/\d/, 'Must contain a number')
+      .matches(/[!@#$%^&*()]/, 'Must contain special character'),
+    confirmPassword: yup
+      .string()
+      .oneOf([yup.ref('password'), null], 'Passwords must match')
+      .required('Confirm password is required'),
+    mobile: yup
+      .string()
+      .matches(/^[0-9]{10}$/, 'Invalid mobile number')
+      .nullable()
+      .transform((value, originalValue) =>
+        originalValue === '' ? null : value,
+      ),
+    country: yup.string().required('Country is required'),
+    state: yup.string().required('State is required'),
+    city: yup.string().required('City is required'),
+  })
+  .test(
+    'email-or-mobile-required',
+    'Either Email or Mobile number is required',
+    function (value) {
+      const { email, mobile } = value;
+      return !!(email || mobile);
+    },
+  );
 
 export default function SignUp() {
   const [loading, setLoading] = useState(false);
@@ -60,10 +74,16 @@ export default function SignUp() {
     handleSubmit,
     formState: { errors, isValid },
     reset,
+    watch,
   } = useForm({
     resolver: yupResolver(schema),
     mode: 'onChange',
   });
+
+  const password = watch('password');
+  const confirmPassword = watch('confirmPassword');
+  const passwordsMatch =
+    password && confirmPassword && password === confirmPassword;
 
   const onSubmit = async (data) => {
     try {
@@ -116,7 +136,7 @@ export default function SignUp() {
 
               <form
                 onSubmit={handleSubmit(onSubmit)}
-                className="flex flex-col items-center space-y-3"
+                className="flex flex-col items-center space-y-2"
               >
                 <InputField
                   icon={<MdPerson />}
@@ -124,6 +144,7 @@ export default function SignUp() {
                   name="fullName"
                   register={register}
                   error={errors.fullName}
+                  required={true}
                 />
                 <InputField
                   icon={<FaRegEnvelope />}
@@ -131,6 +152,16 @@ export default function SignUp() {
                   name="email"
                   register={register}
                   error={errors.email}
+                  required={true}
+                />
+                <p className="pt-3">Or</p>
+                <InputField
+                  icon={<FaPhone />}
+                  placeholder="Mobile Number"
+                  name="mobile"
+                  register={register}
+                  error={errors.mobile}
+                  required={true}
                 />
                 <InputField
                   icon={<MdLockOutline />}
@@ -141,6 +172,7 @@ export default function SignUp() {
                   isPassword={true}
                   show={showPassword}
                   toggleShow={() => setShowPassword((prev) => !prev)}
+                  required={true}
                 />
                 <InputField
                   icon={<MdLockOutline />}
@@ -151,20 +183,27 @@ export default function SignUp() {
                   isPassword={true}
                   show={showConfirmPassword}
                   toggleShow={() => setShowConfirmPassword((prev) => !prev)}
+                  required={true}
                 />
-                <InputField
-                  icon={<FaPhone />}
-                  placeholder="Mobile Number"
-                  name="mobile"
-                  register={register}
-                  error={errors.mobile}
-                />
+                {confirmPassword && !errors.confirmPassword && (
+                  <p
+                    className={`text-sm mt-1 ml-1 ${
+                      passwordsMatch ? 'text-green-500' : 'text-red-500'
+                    }`}
+                  >
+                    {passwordsMatch
+                      ? '✓ Passwords match'
+                      : '✗ Passwords do not match'}
+                  </p>
+                )}
+
                 <InputField
                   icon={<FaGlobe />}
                   placeholder="Country"
                   name="country"
                   register={register}
                   error={errors.country}
+                  required={true}
                 />
                 <InputField
                   icon={<FaMapMarkerAlt />}
@@ -172,6 +211,7 @@ export default function SignUp() {
                   name="state"
                   register={register}
                   error={errors.state}
+                  required={true}
                 />
                 <InputField
                   icon={<FaCity />}
@@ -179,7 +219,30 @@ export default function SignUp() {
                   name="city"
                   register={register}
                   error={errors.city}
+                  required={true}
                 />
+
+                <div className="w-64 text-sm text-gray-500 mb-4">
+                  By Signin up, you agree to our{' '}
+                  <Link
+                    href="/terms"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[#01304C] hover:underline"
+                  >
+                    Terms of Service
+                  </Link>{' '}
+                  and{' '}
+                  <Link
+                    href="/privacy"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[#01304C] hover:underline"
+                  >
+                    Privacy Policy
+                  </Link>
+                  .
+                </div>
 
                 <button
                   type="submit"
@@ -232,9 +295,13 @@ function InputField({
   isPassword = false,
   show,
   toggleShow,
+  required = false,
 }) {
   return (
     <div className="w-full relative">
+      <label className="block text-left text-sm font-medium text-gray-700 mb-1 ml-1">
+        {placeholder} {required && <span className="text-red-500">*</span>}
+      </label>
       <div className="bg-gray-100 w-full p-2 pl-3 pr-10 flex items-center rounded">
         <span className="text-gray-400 mr-2">{icon}</span>
         <input

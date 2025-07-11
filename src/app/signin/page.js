@@ -8,7 +8,7 @@ import {
 } from 'react-icons/fa';
 import { MdLockOutline } from 'react-icons/md';
 import { IoMdClose } from 'react-icons/io';
-import { RiEyeLine, RiEyeCloseLine } from "react-icons/ri";
+import { RiEyeLine, RiEyeCloseLine } from 'react-icons/ri';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -40,7 +40,7 @@ export default function Home() {
   const [isClosing, setIsClosing] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  const togglePassword = () => setShowPassword((prev) => !prev)
+  const togglePassword = () => setShowPassword((prev) => !prev);
 
   const {
     register,
@@ -73,7 +73,7 @@ export default function Home() {
 
   const handleClose = () => {
     setIsClosing(true);
-    setTimeout(() => router.push('/'),100);
+    setTimeout(() => router.push('/'), 100);
   };
 
   return (
@@ -97,7 +97,9 @@ export default function Home() {
               </button>
             </div>
             <div className="text-left font-bold text-xl">
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#01304C] to-[#1BEBC8]">APSN Skilling LLP</span>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#01304C] to-[#1BEBC8]">
+                APSN Skilling LLP
+              </span>
             </div>
             <div className="py-10">
               <h2 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#01304C] to-[#1BEBC8] mb-2">
@@ -145,14 +147,17 @@ export default function Home() {
                 <div className="bg-gray-100 w-64 p-2 flex items-center relative">
                   <MdLockOutline className="text-gray-400 m-2" />
                   <input
-                    type={showPassword ? "text": "password"}
+                    type={showPassword ? 'text' : 'password'}
                     placeholder="Enter your Password"
                     name="password"
                     autoComplete="off"
                     {...register('password')}
                     className="bg-gray-100 outline-none text-sm flex-1 pr-8"
                   />
-                  <div className='absolute right-2 cursor-pointer text-gray-400' onClick={togglePassword}>
+                  <div
+                    className="absolute right-2 cursor-pointer text-gray-400"
+                    onClick={togglePassword}
+                  >
                     {showPassword ? <RiEyeLine /> : <RiEyeCloseLine />}
                   </div>
                 </div>
@@ -173,6 +178,28 @@ export default function Home() {
                     Forgot Password
                   </Link>
                 </div>
+                <div className="w-64 text-sm text-gray-500 mb-4">
+                  By logging in, you agree to our{' '}
+                  <Link
+                    href="/terms"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[#01304C] hover:underline"
+                  >
+                    Terms of Service
+                  </Link>{' '}
+                  and{' '}
+                  <Link
+                    href="/privacy"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[#01304C] hover:underline"
+                  >
+                    Privacy Policy
+                  </Link>
+                  .
+                </div>
+
                 <button
                   onClick={handleSubmit(onSubmit)}
                   type="submit"
