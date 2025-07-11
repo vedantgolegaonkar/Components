@@ -1,5 +1,6 @@
 'use client';
 
+// imports
 import {
   FaRegEnvelope,
   FaPhone,
@@ -17,6 +18,8 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { IoMdClose } from 'react-icons/io';
+import {accountCreate, companyName, loginButton, signing, signInTitle, subTitle} from '../constants/signup'
+import { policy, terms } from '../constants/signin';
 
 const schema = yup
   .object()
@@ -63,6 +66,8 @@ const schema = yup
   );
 
 export default function SignUp() {
+
+  // constants
   const [loading, setLoading] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
   const router = useRouter();
@@ -112,7 +117,6 @@ export default function SignUp() {
             isClosing ? 'opacity-0 scale-90' : 'opacity-100 scale-100'
           }`}
         >
-          {/* Left Side - Form */}
           <div className="w-3/5 p-5">
             <div className="flex justify-end">
               <button
@@ -125,12 +129,12 @@ export default function SignUp() {
             </div>
             <div className="text-left font-bold text-xl">
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#01304C] to-[#1BEBC8]">
-                APSN Skilling LLP
+                {companyName}
               </span>
             </div>
             <div className="py-6">
               <h2 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#01304C] to-[#1BEBC8] mb-2">
-                Create Your Account
+                {accountCreate}
               </h2>
               <div className="border-2 w-10 border-[#1BEBC8] inline-block mb-4"></div>
 
@@ -223,14 +227,14 @@ export default function SignUp() {
                 />
 
                 <div className="w-64 text-sm text-gray-500 mb-4">
-                  By Signin up, you agree to our{' '}
+                  {signing}{' '}
                   <Link
                     href="/terms"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-[#01304C] hover:underline"
                   >
-                    Terms of Service
+                    {terms}
                   </Link>{' '}
                   and{' '}
                   <Link
@@ -239,7 +243,7 @@ export default function SignUp() {
                     rel="noopener noreferrer"
                     className="text-[#01304C] hover:underline"
                   >
-                    Privacy Policy
+                    {policy}
                   </Link>
                   .
                 </div>
@@ -255,28 +259,21 @@ export default function SignUp() {
                 >
                   {loading ? 'Creating Account...' : 'Sign Up'}
                 </button>
-                {/* <Link
-                  href="/signin"
-                  className="text-sm text-blue-500 hover:underline mt-4"
-                >
-                  Already have an account? Login
-                </Link> */}
               </form>
             </div>
           </div>
 
-          {/* Right Side - Welcome Message */}
           <div className="w-2/5 bg-gradient-to-r from-[#01304C] to-[#1BEBC8] text-white rounded-tr-2xl rounded-br-2xl py-36 px-10 flex flex-col items-center justify-center">
-            <h2 className="text-3xl font-bold mb-2">Good to See You!</h2>
+            <h2 className="text-3xl font-bold mb-2">{signInTitle}</h2>
             <div className="border-2 w-10 border-white inline-block mb-2"></div>
             <p className="mb-10">
-              Let&apos;s keep building your future, one step at a time.
+              {subTitle}
             </p>
             <Link
               href="/signin"
               className="border-2 border-white rounded-full px-12 py-2 inline-block hover:bg-white hover:text-[#1BEBC8] font-semibold transition"
             >
-              Login
+              {loginButton}
             </Link>
           </div>
         </div>
