@@ -97,6 +97,12 @@ export default function Home() {
 
   const onSubmit = async (data) => {
     try {
+      const loginType = isEmail ? 'email' : 'mobile';
+      const payload = {
+        ...data,
+        login_type: loginType, 
+      };
+
       await new Promise((r) => setTimeout(r, 1000));
       // const res = await fetch('/api/signin', {
       //   method: 'POST',
