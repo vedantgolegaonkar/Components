@@ -352,28 +352,6 @@ export default function Home() {
                     {isSubmitting ? 'Loading...' : 'Sign In'}
                   </button>
                 )}
-
-                {/* <button
-                  onClick={handleSubmit(onSubmit)}
-                  type="submit"
-                  disabled={
-                    isSubmitting ||
-                    (isMobile && !isOtpSent && identifier.length !== 10) || // prevent submit until valid mobile
-                    (isMobile && isOtpSent && !isValid) || // after otp is sent, validate otp
-                    (!isMobile && !isValid) // for email-password login
-                  }
-                  className={`border-2 ${
-                    (isMobile && !isOtpSent) || isValid
-                      ? 'border-[#1BEBC8] text-[#1BEBC8] hover:bg-[#1BEBC8] hover:text-white'
-                      : 'border-gray-300 text-gray-300 cursor-not-allowed'
-                  } rounded-full px-12 py-2 inline-block font-semibold transition-colors duration-300`}
-                >
-                  {isSubmitting
-                    ? 'Loading...'
-                    : isMobile && !isOtpSent
-                    ? 'Submit'
-                    : 'Sign In'}
-                </button> */}
               </div>
             </div>
           </div>

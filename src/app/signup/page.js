@@ -109,11 +109,18 @@ export default function SignUp() {
   };
 
   return (
-    <div className="relative flex flex-col items-center justify-center min-h-screen py-2 bg-gray-200 overflow-hidden">
+    <div className="relative flex flex-col items-center justify-center min-h-screen py-2 bg-[linear-gradient(to_right,_#0A6586,_#1B93B4,_#0D81A1,_#0DB1F2)] overflow-hidden">
+      {/* <div
+        className="absolute inset-0 bg-cover bg-center z-0"
+        style={{
+          backgroundImage: "url('/background.jpg')",
+          opacity: 1,
+        }}
+      ></div> */}
       <Toaster position="top-right" />
       <main className="flex flex-col items-center justify-center w-full flex-1 px-20 text-center">
         <div
-          className={`bg-white rounded-2xl shadow-2xl flex w-2/3 max-w-4xl transform transition-all duration-300 ${
+          className={`bg-white rounded-4xl shadow-2xl flex w-2/3 max-w-4xl transform transition-all duration-300 ${
             isClosing ? 'opacity-0 scale-90' : 'opacity-100 scale-100'
           }`}
         >
@@ -127,12 +134,12 @@ export default function SignUp() {
                 <IoMdClose />
               </button>
             </div>
-            <div className="text-left font-bold text-xl">
+            <div className="text-center font-bold text-xl">
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#01304C] to-[#1BEBC8]">
                 {companyName}
               </span>
             </div>
-            <div className="py-6">
+            <div className="py-3">
               <h2 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#01304C] to-[#1BEBC8] mb-2">
                 {accountCreate}
               </h2>
@@ -226,7 +233,7 @@ export default function SignUp() {
                   required={true}
                 />
 
-                <div className="w-64 text-sm text-gray-500 mb-4">
+                <div className="w-64 text-sm text-gray-500 mb-4 mt-5">
                   {signing}{' '}
                   <Link
                     href="/terms"
@@ -263,7 +270,7 @@ export default function SignUp() {
             </div>
           </div>
 
-          <div className="w-2/5 bg-gradient-to-r from-[#01304C] to-[#1BEBC8] text-white rounded-tr-2xl rounded-br-2xl py-36 px-10 flex flex-col items-center justify-center">
+          <div className="w-2/5 bg-[#90DAFF] text-[#0A6586] rounded-4xl py-36 px-10 flex flex-col items-center justify-center shadow-2xl">
             <h2 className="text-3xl font-bold mb-2">{signInTitle}</h2>
             <div className="border-2 w-10 border-white inline-block mb-2"></div>
             <p className="mb-10">
