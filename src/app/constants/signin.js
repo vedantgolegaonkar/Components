@@ -6,5 +6,6 @@ export const forgotPassword = 'Forgot Password';
 export const terms = 'Terms of Service';
 export const logging = 'By logging in, you agree to our';
 export const policy = 'Privacy Policy';
-export const signUpTitle = "We're excited to walk this journey with you!";
+export const signUpTitle = "Create. Learn. Succeed.";
+export const signUpSubTitle = "We're excited to walk this journey with you!";
 export const signUpButton = "Sign Up"

@@ -1,6 +1,6 @@
 'use client';
 // Imports
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -24,11 +24,11 @@ import {
   remember,
   signIn,
   signUpButton,
+  signUpSubTitle,
   signUpTitle,
   terms,
   useEmail,
 } from '../constants/signin';
-
 
 // Define a Yup validation schema for the sign-in form
 const schema = yup.object().shape({
@@ -45,7 +45,7 @@ const schema = yup.object().shape({
       },
     ),
   password: yup.string().when('identifier', {
-    is: (val) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val), // If it's an email
+    is: (val) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val),
     then: (schema) =>
       schema
         .required('Password is required')
@@ -60,8 +60,8 @@ const schema = yup.object().shape({
         ),
     otherwise: (schema) => schema.notRequired(),
   }),
-  otp: yup.string().when('identifier', {
-    is: (val) => /^\d{10}$/.test(val), // If it's a mobile number
+  otp: yup.string().when(['identifier'], {
+    is: (val) => /^\d{10}$/.test(val),
     then: (schema) =>
       schema
         .required('OTP is required')
@@ -70,15 +70,15 @@ const schema = yup.object().shape({
   }),
 });
 
-
-
 export default function Home() {
-
   // Constants
   const router = useRouter();
   const [isClosing, setIsClosing] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const togglePassword = () => setShowPassword((prev) => !prev);
+  const [isOtpSent, setIsOtpSent] = useState(false);
+  const [timer, setTimer] = useState(60);
+  const [canResend, setCanResend] = useState(false);
 
   const {
     register,
@@ -91,7 +91,6 @@ export default function Home() {
     mode: 'onChange', // enables real-time validation
   });
 
-  
   const identifier = watch('identifier');
   const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(identifier || '');
   const isMobile = /^\d{10}$/.test(identifier || '');
@@ -107,6 +106,7 @@ export default function Home() {
       // const result = await res.json();
 
       // if (!res.ok) throw new Error(result.message || 'Failed to sign up');
+
       reset();
       router.push('/dashboard');
       toast.success('Login Successful', { duration: 3000 });
@@ -120,12 +120,46 @@ export default function Home() {
     setTimeout(() => router.push('/'), 100);
   };
 
+  const otpSubmit = () => {
+    if (isMobile) {
+      toast.success('OTP sent to your mobile', { duration: 3000 });
+      setIsOtpSent(true);
+      setCanResend(false);
+      setTimer(60);
+    }
+  };
+
+  useEffect(() => {
+    let countdown;
+
+    if (isOtpSent && !canResend) {
+      countdown = setInterval(() => {
+        setTimer((prev) => {
+          if (prev === 1) {
+            clearInterval(countdown);
+            setCanResend(true);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+    return () => clearInterval(countdown);
+  }, [isOtpSent, canResend]);
+
   return (
-    <div className="relative flex flex-col items-center justify-center min-h-screen py-2 bg-gray-200 overflow-hidden">
+    <div className="relative flex flex-col items-center justify-center min-h-screen bg-[linear-gradient(to_right,_#0A6586,_#1B93B4,_#0D81A1,_#0DB1F2)] py-2 overflow-hidden">
+      {/* <div
+        className="absolute inset-0 bg-cover bg-center z-0"
+        style={{
+          backgroundImage: "url('/background.jpg')",
+          opacity: 1,
+        }}
+      ></div> */}
       <Toaster position="top-right" reverseOrder={false} />
       <main className="flex flex-col items-center justify-center w-full flex-1 px-20 text-center">
         <div
-          className={`bg-white rounded-2xl shadow-2xl flex w-2/3 max-w-4xl transform transition-all duration-300 ${
+          className={`bg-white rounded-4xl shadow-2xl flex w-2/3 max-w-4xl transform transition-all duration-300 ${
             isClosing ? 'opacity-0 scale-90' : 'opacity-100 scale-100'
           }`}
         >
@@ -139,12 +173,12 @@ export default function Home() {
                 <IoMdClose />
               </button>
             </div>
-            <div className="text-left font-bold text-xl">
+            <div className="text-center font-bold text-xl">
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#01304C] to-[#1BEBC8]">
                 {companyName}
               </span>
             </div>
-            <div className="py-10">
+            <div className="py-3">
               <h2 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#01304C] to-[#1BEBC8] mb-2">
                 {signIn}
               </h2>
@@ -214,7 +248,7 @@ export default function Home() {
                   </div>
                 )}
 
-                {isMobile && (
+                {isMobile && isOtpSent && (
                   <div>
                     <div className="bg-gray-100 w-64 p-2 flex items-center relative mb-3">
                       <MdLockOutline className="text-gray-400 mr-2" />
@@ -237,6 +271,19 @@ export default function Home() {
                         {errors.otp.message}
                       </p>
                     )}
+                    <div className="text-sm mt-5 text-gray-500">
+                      {canResend ? (
+                        <button
+                          type="button"
+                          onClick={otpSubmit}
+                          className="text-blue-600 hover:underline"
+                        >
+                          Resend OTP
+                        </button>
+                      ) : (
+                        <span>Resend available in {timer}s</span>
+                      )}
+                    </div>
                   </div>
                 )}
                 {errors.password && (
@@ -244,7 +291,7 @@ export default function Home() {
                     {errors.password.message}
                   </p>
                 )}
-                <div className="flex justify-between w-64 mb-5 mt-2">
+                <div className="flex justify-between w-64 mb-5 mt-8">
                   <label className="flex items-center text-sm">
                     <input type="checkbox" className="mr-1" name="remember" />
                     {remember}
@@ -278,25 +325,62 @@ export default function Home() {
                   .
                 </div>
 
-                <button
+                {isMobile && !isOtpSent ? (
+                  <button
+                    onClick={otpSubmit}
+                    type="button"
+                    disabled={identifier.length !== 10}
+                    className={`border-2 ${
+                      identifier.length === 10
+                        ? 'border-[#1BEBC8] text-[#1BEBC8] hover:bg-[#1BEBC8] hover:text-white'
+                        : 'border-gray-300 text-gray-300 cursor-not-allowed'
+                    } rounded-full px-12 py-2 inline-block font-semibold transition-colors duration-300`}
+                  >
+                    Submit
+                  </button>
+                ) : (
+                  <button
+                    onClick={handleSubmit(onSubmit)}
+                    type="submit"
+                    disabled={isSubmitting || !isValid}
+                    className={`border-2 ${
+                      isValid
+                        ? 'border-[#1BEBC8] text-[#1BEBC8] hover:bg-[#1BEBC8] hover:text-white'
+                        : 'border-gray-300 text-gray-300 cursor-not-allowed'
+                    } rounded-full px-12 py-2 inline-block font-semibold transition-colors duration-300`}
+                  >
+                    {isSubmitting ? 'Loading...' : 'Sign In'}
+                  </button>
+                )}
+
+                {/* <button
                   onClick={handleSubmit(onSubmit)}
                   type="submit"
-                  disabled={!isValid || isSubmitting}
+                  disabled={
+                    isSubmitting ||
+                    (isMobile && !isOtpSent && identifier.length !== 10) || // prevent submit until valid mobile
+                    (isMobile && isOtpSent && !isValid) || // after otp is sent, validate otp
+                    (!isMobile && !isValid) // for email-password login
+                  }
                   className={`border-2 ${
-                    isValid
+                    (isMobile && !isOtpSent) || isValid
                       ? 'border-[#1BEBC8] text-[#1BEBC8] hover:bg-[#1BEBC8] hover:text-white'
                       : 'border-gray-300 text-gray-300 cursor-not-allowed'
                   } rounded-full px-12 py-2 inline-block font-semibold transition-colors duration-300`}
                 >
-                  {isSubmitting ? 'Loading...' : 'Sign In'}
-                </button>
+                  {isSubmitting
+                    ? 'Loading...'
+                    : isMobile && !isOtpSent
+                    ? 'Submit'
+                    : 'Sign In'}
+                </button> */}
               </div>
             </div>
           </div>
-          <div className="w-2/5 bg-gradient-to-r from-[#01304C] to-[#1BEBC8] text-white rounded-tr-2xl rounded-br-2xl py-36 px-12">
-            <h2 className="text-3xl font-bold mb-2">Create. Learn. Succeed.</h2>
+          <div className="w-2/5 bg-[#90DAFF] text-[#0A6586] rounded-4xl py-36 px-12 shadow-2xl">
+            <h2 className="text-3xl font-bold mb-2">{signUpTitle}</h2>
             <div className="border-2 w-10 border-white inline-block mb-2"></div>
-            <p className="mb-10">{signUpTitle}</p>
+            <p className="mb-10">{signUpSubTitle}</p>
             <Link
               href="/signup"
               className="border-2 border-white rounded-full px-12 py-2 inline-block hover:bg-white hover:text-[#1BEBC8] font-semibold"
