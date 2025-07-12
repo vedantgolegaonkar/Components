@@ -70,6 +70,7 @@ export default function SignUp() {
       // const result = await res.json();
 
       // if (!res.ok) throw new Error(result.message || 'Failed to sign up');
+        console.log(data);
       toast.success('Account created successfully!');
       reset();
     } catch (err) {
@@ -81,87 +82,88 @@ export default function SignUp() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 px-4">
-      <Toaster position="top-right" />
-      <div className="bg-white p-10 rounded-2xl shadow-2xl w-full max-w-md text-center">
-        <h2 className="text-3xl font-bold text-green-500 mb-4">
-          Create Account
-        </h2>
-        <div className="border-2 w-10 border-green-500 inline-block mb-6"></div>
-
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="flex flex-col items-center space-y-4"
-        >
-          <InputField
-            icon={<MdPerson />}
-            placeholder="Full Name"
-            name="fullName"
-            register={register}
-            error={errors.fullName}
-          />
-          <InputField
-            icon={<FaRegEnvelope />}
-            placeholder="Email"
-            name="email"
-            register={register}
-            error={errors.email}
-          />
-          <InputField
-            icon={<MdLockOutline />}
-            type="password"
-            placeholder="Password"
-            name="password"
-            register={register}
-            error={errors.password}
-          />
-          <InputField
-            icon={<FaPhone />}
-            placeholder="Mobile Number"
-            name="mobile"
-            register={register}
-            error={errors.mobile}
-          />
-          <InputField
-            icon={<FaGlobe />}
-            placeholder="Country"
-            name="country"
-            register={register}
-            error={errors.country}
-          />
-          <InputField
-            icon={<FaMapMarkerAlt />}
-            placeholder="State"
-            name="state"
-            register={register}
-            error={errors.state}
-          />
-          <InputField
-            icon={<FaCity />}
-            placeholder="City"
-            name="city"
-            register={register}
-            error={errors.city}
-          />
-
-          <button
-            type="submit"
-            disabled={!isValid || loading}
-            className={`mt-4 w-full py-2 rounded-full font-semibold transition-colors duration-300 ${
-              loading || !isValid
-                ? 'bg-gray-300 text-white cursor-not-allowed'
-                : 'bg-green-500 text-white hover:bg-green-600'
-            }`}
-          >
-            {loading ? 'Creating Account...' : 'Sign Up'}
-          </button>
-          <Link
-            href="/signin"
-            className="text-sm text-blue-500 hover:underline mt-5"
-          >
-            Back to Login
-          </Link>
-        </form>
-      </div>
+    //   <Toaster position="top-right" />
+    //   <div className="bg-white p-10 rounded-2xl shadow-2xl w-full max-w-md text-center">
+    //     <h2 className="text-3xl font-bold text-green-500 mb-4">
+    //       Create Account
+    //     </h2>
+    //     <div className="border-2 w-10 border-green-500 inline-block mb-6"></div>
+    //
+    //     <form
+    //       onSubmit={handleSubmit(onSubmit)}
+    //       className="flex flex-col items-center space-y-4"
+    //     >
+    //       <InputField
+    //         icon={<MdPerson />}
+    //         placeholder="Full Name"
+    //         name="fullName"
+    //         register={register}
+    //         error={errors.fullName}
+    //       />
+    //       <InputField
+    //         icon={<FaRegEnvelope />}
+    //         placeholder="Email"
+    //         name="email"
+    //         register={register}
+    //         error={errors.email}
+    //       />
+    //       <InputField
+    //         icon={<MdLockOutline />}
+    //         type="password"
+    //         placeholder="Password"
+    //         name="password"
+    //         register={register}
+    //         error={errors.password}
+    //       />
+    //       <InputField
+    //         icon={<FaPhone />}
+    //         placeholder="Mobile Number"
+    //         name="mobile"
+    //         register={register}
+    //         error={errors.mobile}
+    //       />
+    //       <InputField
+    //         icon={<FaGlobe />}
+    //         placeholder="Country"
+    //         name="country"
+    //         register={register}
+    //         error={errors.country}
+    //       />
+    //       <InputField
+    //         icon={<FaMapMarkerAlt />}
+    //         placeholder="State"
+    //         name="state"
+    //         register={register}
+    //         error={errors.state}
+    //       />
+    //       <InputField
+    //         icon={<FaCity />}
+    //         placeholder="City"
+    //         name="city"
+    //         register={register}
+    //         error={errors.city}
+    //       />
+    //
+    //       <button
+    //         type="submit"
+    //         disabled={!isValid || loading}
+    //         className={`mt-4 w-full py-2 rounded-full font-semibold transition-colors duration-300 ${
+    //           loading || !isValid
+    //             ? 'bg-gray-300 text-white cursor-not-allowed'
+    //             : 'bg-green-500 text-white hover:bg-green-600'
+    //         }`}
+    //       >
+    //         {loading ? 'Creating Account...' : 'Sign Up'}
+    //       </button>
+    //       <Link
+    //         href="/signin"
+    //         className="text-sm text-blue-500 hover:underline mt-5"
+    //       >
+    //         Back to Login
+    //       </Link>
+    //     </form>
+    //   </div>
+     <img src="Untitled.jpg" alt="">
     </div>
   );
 }

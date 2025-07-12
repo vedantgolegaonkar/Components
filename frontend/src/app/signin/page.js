@@ -55,6 +55,7 @@ export default function Home() {
       // const result = await res.json();
 
       // if (!res.ok) throw new Error(result.message || 'Failed to sign up');
+                console.log(data);
       reset();
       router.push('/dashboard');
       toast.success('Login Successful', {duration: 3000}); // mock response

@@ -1,0 +1,9 @@
+SQLAlchemy
+python-dotenv
+fastapi
+uvicorn
+psycopg2-binary
+pydantic
+httpx
+requests
+pydantic[email]
