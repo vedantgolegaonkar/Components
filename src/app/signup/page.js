@@ -108,48 +108,44 @@ export default function SignUp() {
     setTimeout(() => router.push('/'), 100);
   };
 
-  return (
-    <div className="relative flex flex-col items-center justify-center min-h-screen py-2 bg-[linear-gradient(to_right,_#0A6586,_#1B93B4,_#0D81A1,_#0DB1F2)] overflow-hidden">
-      {/* <div
-        className="absolute inset-0 bg-cover bg-center z-0"
-        style={{
-          backgroundImage: "url('/background.jpg')",
-          opacity: 1,
-        }}
-      ></div> */}
-      <Toaster position="top-right" />
-      <main className="flex flex-col items-center justify-center w-full flex-1 px-20 text-center">
-        <div
-          className={`bg-white rounded-4xl shadow-2xl flex w-2/3 max-w-4xl transform transition-all duration-300 ${
-            isClosing ? 'opacity-0 scale-90' : 'opacity-100 scale-100'
-          }`}
-        >
-          <div className="w-3/5 p-5">
-            <div className="flex justify-end">
-              <button
-                onClick={handleClose}
-                className="text-gray-400 hover:text-red-500 text-2xl transform transition-transform duration-200 hover:scale-125"
-                aria-label="Close"
-              >
-                <IoMdClose />
-              </button>
-            </div>
-            <div className="text-center font-bold text-xl">
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#01304C] to-[#1BEBC8]">
-                {companyName}
-              </span>
-            </div>
-            <div className="py-3">
-              <h2 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#01304C] to-[#1BEBC8] mb-2">
-                {accountCreate}
-              </h2>
-              <div className="border-2 w-10 border-[#1BEBC8] inline-block mb-4"></div>
+return (
+  <div className="relative flex flex-col items-center justify-center min-h-screen py-2 bg-[linear-gradient(to_right,_#0A6586,_#1B93B4,_#0D81A1,_#0DB1F2)] overflow-hidden">
+    <Toaster position="top-right" />
+    <main className="flex flex-col items-center justify-center w-full flex-1 px-4 sm:px-8 md:px-12 lg:px-20 text-center">
+      <div
+        className={`bg-white rounded-4xl shadow-2xl flex flex-col md:flex-row w-full max-w-4xl transition-all duration-300 ${
+          isClosing ? 'opacity-0 scale-90' : 'opacity-100 scale-100'
+        }`}
+      >
+        {/* Left Form Section */}
+        <div className="w-full md:w-3/5 p-6 sm:p-10 lg:p-14">
+          <div className="flex justify-end">
+            <button
+              onClick={handleClose}
+              className="text-gray-400 hover:text-red-500 text-2xl transform transition-transform duration-200 hover:scale-125"
+              aria-label="Close"
+            >
+              <IoMdClose />
+            </button>
+          </div>
 
-              <form
-                onSubmit={handleSubmit(onSubmit)}
-                className="flex flex-col items-center space-y-2"
-              >
-                <InputField
+          <div className="text-center font-bold text-xl sm:text-2xl mb-4">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#01304C] to-[#1BEBC8]">
+              {companyName}
+            </span>
+          </div>
+
+          <h2 className="text-2xl sm:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#01304C] to-[#1BEBC8] mb-2">
+            {accountCreate}
+          </h2>
+
+          <div className="border-2 w-10 border-[#1BEBC8] inline-block mb-4"></div>
+
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="flex flex-col items-center space-y-2"
+          >
+            <InputField
                   icon={<MdPerson />}
                   placeholder="Full Name"
                   name="fullName"
@@ -232,61 +228,60 @@ export default function SignUp() {
                   error={errors.city}
                   required={true}
                 />
-
-                <div className="w-64 text-sm text-gray-500 mb-4 mt-5">
-                  {signing}{' '}
-                  <Link
-                    href="/terms"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-[#01304C] hover:underline"
-                  >
-                    {terms}
-                  </Link>{' '}
-                  and{' '}
-                  <Link
-                    href="/privacy"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-[#01304C] hover:underline"
-                  >
-                    {policy}
-                  </Link>
-                  .
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={!isValid || loading}
-                  className={`mt-4 w-full py-2 rounded-full font-semibold transition-colors duration-300 ${
-                    loading || !isValid
-                      ? 'bg-gray-300 text-white cursor-not-allowed'
-                      : 'bg-[#1BEBC8] text-white hover:bg-[#17c6ad]'
-                  }`}
-                >
-                  {loading ? 'Creating Account...' : 'Sign Up'}
-                </button>
-              </form>
+            <div className="w-full sm:w-64 text-sm text-gray-500 mb-4 mt-5">
+              {signing}{' '}
+              <Link
+                href="/terms"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[#01304C] hover:underline"
+              >
+                {terms}
+              </Link>{' '}
+              and{' '}
+              <Link
+                href="/privacy"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[#01304C] hover:underline"
+              >
+                {policy}
+              </Link>
+              .
             </div>
-          </div>
 
-          <div className="w-2/5 bg-[#90DAFF] text-[#0A6586] rounded-4xl py-36 px-10 flex flex-col items-center justify-center shadow-2xl">
-            <h2 className="text-3xl font-bold mb-2">{signInTitle}</h2>
-            <div className="border-2 w-10 border-white inline-block mb-2"></div>
-            <p className="mb-10">
-              {subTitle}
-            </p>
-            <Link
-              href="/signin"
-              className="border-2 border-white rounded-full px-12 py-2 inline-block hover:bg-white hover:text-[#1BEBC8] font-semibold transition"
+            <button
+              type="submit"
+              disabled={!isValid || loading}
+              className={`mt-4 w-full sm:w-64 py-2 rounded-full font-semibold transition-colors duration-300 ${
+                loading || !isValid
+                  ? 'bg-gray-300 text-white cursor-not-allowed'
+                  : 'bg-[#1BEBC8] text-white hover:bg-[#17c6ad]'
+              }`}
             >
-              {loginButton}
-            </Link>
-          </div>
+              {loading ? 'Creating Account...' : 'Sign Up'}
+            </button>
+          </form>
         </div>
-      </main>
-    </div>
-  );
+
+        {/* Right Panel - Hidden on small screens */}
+        <div className="hidden md:flex w-full md:w-2/5 bg-[#90DAFF] text-[#0A6586] rounded-b-4xl md:rounded-bl-none md:rounded-tr-4xl md:rounded-br-4xl py-24 px-8 shadow-2xl flex-col items-center justify-center text-center">
+          <h2 className="text-2xl sm:text-3xl font-bold mb-2">{signInTitle}</h2>
+          <div className="border-2 w-10 border-white inline-block mb-2"></div>
+          <p className="mb-10 text-sm sm:text-base">{subTitle}</p>
+          <Link
+            href="/signin"
+            className="border-2 border-white rounded-full px-10 py-2 inline-block hover:bg-white hover:text-[#1BEBC8] font-semibold transition"
+          >
+            {loginButton}
+          </Link>
+        </div>
+      </div>
+    </main>
+  </div>
+);
+
+
 }
 
 function InputField({
@@ -332,3 +327,7 @@ function InputField({
     </div>
   );
 }
+
+
+
+

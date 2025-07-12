@@ -149,6 +149,13 @@ export default function Home() {
 
   return (
     <div className="relative flex flex-col items-center justify-center min-h-screen bg-[linear-gradient(to_right,_#0A6586,_#1B93B4,_#0D81A1,_#0DB1F2)] py-4 px-4 sm:px-6 md:px-12 lg:px-20 overflow-hidden">
+      {/* <div
+  //       className="absolute inset-0 bg-cover bg-center z-0"
+  //       style={{
+  //         backgroundImage: "url('/background.jpg')",
+  //         opacity: 1,
+  //       }}
+  //     ></div> */}
       <Toaster position="top-right" reverseOrder={false} />
       <main className="flex flex-col items-center justify-center w-full text-center">
         <div
