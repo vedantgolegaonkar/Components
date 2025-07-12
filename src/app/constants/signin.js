@@ -1,0 +1,11 @@
+export const companyName = 'APSN Skiling LLP';
+export const signIn = 'Sign in to Account';
+export const useEmail = 'or use your email account';
+export const remember = 'Remember Me';
+export const forgotPassword = 'Forgot Password';
+export const terms = 'Terms of Service';
+export const logging = 'By logging in, you agree to our';
+export const policy = 'Privacy Policy';
+export const signUpTitle = "Create. Learn. Succeed.";
+export const signUpSubTitle = "We're excited to walk this journey with you!";
+export const signUpButton = "Sign Up"
