@@ -83,7 +83,7 @@ def get_engine(
 #####################################################################################################################
 
 # ------------------------
-# Complete the init_database function to auto generate the schema when during application launch ######
+# Complete the init_database function to auto generate the schema during application launch ######
 # ------------------------
 
 # def init_database(engine):
