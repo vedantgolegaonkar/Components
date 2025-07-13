@@ -69,6 +69,48 @@ class RegisterUser(BaseModel):
         return v
 
 
+def validate_location(db: Session, country_name: Optional[str], state_name: Optional[str], city_name: Optional[str]):
+    """
+    Validates the provided country, state, and city names and returns their IDs.
+    If any of them is None, it skips validation for that level.
+    """
+    country_id, state_id, city_id = None, None, None
+
+    if country_name:
+        country = db.query(Countries).filter(Countries.name.ilike(country_name)).first()
+        if not country:
+            raise HTTPException(status_code=400, detail=f"Invalid country: {country_name}")
+        country_id = country.id
+    else:
+        country = None
+
+    if state_name:
+        if not country:
+            raise HTTPException(status_code=400, detail="State provided but no valid country specified.")
+        state = db.query(States).filter(
+            States.name.ilike(state_name),
+            States.country_id == country_id
+        ).first()
+        if not state:
+            raise HTTPException(status_code=400, detail=f"Invalid state: {state_name}")
+        state_id = state.id
+
+    if city_name:
+        if not country or not state_id:
+            raise HTTPException(status_code=400, detail="City provided but no valid state or country specified.")
+        city = db.query(Cities).filter(
+            Cities.name.ilike(city_name),
+            Cities.state_id == state_id,
+            Cities.country_id == country_id
+        ).first()
+        if not city:
+            raise HTTPException(status_code=400, detail=f"Invalid city: {city_name}")
+        city_id = city.id
+
+    return country_id, state_id, city_id
+
+
+
 # ------------------------
 # FastAPI app
 # ------------------------
@@ -90,29 +132,16 @@ async def register_user(user: RegisterUser):
         existing_user = db.query(User).filter(
             (User.email == user.email) | (User.mobile_number == user.phoneNumber)
         ).first()
-
         if existing_user:
             raise HTTPException(status_code=400, detail="User already exists with this email or phone")
 
-        # Get country, state, city IDs
-        country = db.query(Countries).filter(Countries.name.ilike(user.country)).first()
-        if not country:
-            raise HTTPException(status_code=400, detail=f"Invalid country: {user.country}")
-
-        state = db.query(States).filter(
-            States.name.ilike(user.state),
-            States.country_id == country.id
-        ).first()
-        if not state:
-            raise HTTPException(status_code=400, detail=f"Invalid state: {user.state}")
-
-        city = db.query(Cities).filter(
-            Cities.name.ilike(user.city),
-            Cities.state_id == state.id,
-            Cities.country_id == country.id
-        ).first()
-        if not city:
-            raise HTTPException(status_code=400, detail=f"Invalid city: {user.city}")
+        # Validate location only if provided
+        country_id, state_id, city_id = validate_location(
+            db,
+            user.country,
+            user.state,
+            user.city
+        )
 
         # Handle OTP registration
         if user.phoneNumber and not user.password:
@@ -125,14 +154,13 @@ async def register_user(user: RegisterUser):
             email=user.email,
             password=generate_password_hash(user.password),
             mobile_number=user.phoneNumber,
-            country_id=country.id,
-            region_id=state.id,
-            city_id=city.id,
+            country_id=country_id,
+            region_id=state_id,
+            city_id=city_id,
             created_at=datetime.utcnow(),
             updated_at=datetime.utcnow(),
             is_active=True
         )
-
         db.add(new_user)
         db.commit()
         db.refresh(new_user)
