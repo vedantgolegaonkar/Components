@@ -65,9 +65,9 @@ const schema = yup
       .transform((value, originalValue) =>
         originalValue === '' ? null : value,
       ),
-    country: yup.string().required('Country is required'),
-    state: yup.string().required('State is required'),
-    city: yup.string().required('City is required'),
+    country: yup.string(),
+    state: yup.string(),
+    city: yup.string(),
   })
   .test(
     'email-or-mobile-required',
@@ -266,7 +266,6 @@ export default function SignUp() {
                 name="country"
                 register={register}
                 error={errors.country}
-                required={true}
               />
               <InputField
                 icon={<FaMapMarkerAlt />}
@@ -274,7 +273,6 @@ export default function SignUp() {
                 name="state"
                 register={register}
                 error={errors.state}
-                required={true}
               />
               <InputField
                 icon={<FaCity />}
@@ -282,7 +280,6 @@ export default function SignUp() {
                 name="city"
                 register={register}
                 error={errors.city}
-                required={true}
               />
               <div className="w-full sm:w-64 text-sm text-gray-500 mb-4 mt-5">
                 {signing}{' '}
