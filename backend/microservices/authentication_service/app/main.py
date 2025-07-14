@@ -1,6 +1,9 @@
 import os
 import sys
 from datetime import datetime
+
+from sqlalchemy import BigInteger
+
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..')))
 
 import uvicorn
@@ -27,7 +30,7 @@ def send_otp_to_user(phone_number: int):
 
 
 # ------------------------
-# Pydantic v2 Schema
+# Pydantic Register User Schema
 # ------------------------
 class RegisterUser(BaseModel):
     fullName: str
@@ -67,6 +70,55 @@ class RegisterUser(BaseModel):
         if not re.search(r"[0-9]", v):
             raise ValueError("password must contain at least one number")
         return v
+
+
+# ------------------------
+# Pydantic Login User Schema
+# ------------------------
+class LoginUserEmail(BaseModel):
+    identifier: EmailStr
+    password: str
+    
+    @staticmethod
+    def check_email(identifier):
+        email_pattern = r"^[\w\.-]+@[\w\.-]+\.\w+$"
+        if re.match(email_pattern, identifier):
+            return True
+        else:
+            return False
+
+    @model_validator(mode='after')
+    def check_email_and_password(self) -> 'LoginUserEmail':
+        if not self.identifier or not self.password:
+            raise ValueError("Please enter both email or password")
+        if not self.check_email(self.identifier):
+            raise ValueError("Please enter a valid email address")
+        return self
+
+
+# ------------------------
+# Pydantic Login User Schema With Mobile
+# ------------------------
+class LoginUserMobile(BaseModel):
+    identifier: str
+    otp: str
+
+    @staticmethod
+    def check_phone_number(identifier):
+        phone_pattern = r"^\+?\d{10,15}$"
+        if re.match(phone_pattern, identifier):
+            return True
+        else:
+            return False
+
+    @model_validator(mode='after')
+    def check_number_and_otp(self) -> 'LoginUserMobile':
+        if not self.identifier or not self.otp:
+            raise ValueError("Please enter both email or password")
+        if not self.check_number_and_otp(self.identifier):
+            raise ValueError("Please enter a valid email address")
+        return self
+
 
 
 def validate_location(db: Session, country_name: Optional[str], state_name: Optional[str], city_name: Optional[str]):
@@ -192,15 +244,20 @@ async def register_user(user: RegisterUser):
 # This API is to login a user by email 
 # ------------------------
 @app.post("/api/login-by-email")
-async def email_login():
-    return { "message": "this is user login by email" }
+async def email_login(user: LoginUserEmail):
+    try: 
+        db = Session()
+
+    except Exception as e:
+        print(e)
+    return { "message": user }
 
 
 # ------------------------
 # This API is to login a user by phonenumber 
 # ------------------------
 @app.post("/api/login-by-phonenumber")
-async def phonenumber_login():
+async def phonenumber_login(user: LoginUserMobile):
     return { "message": "this is user login by phonenumber" }
 
 
