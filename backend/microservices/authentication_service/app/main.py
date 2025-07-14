@@ -245,12 +245,36 @@ async def register_user(user: RegisterUser):
 # ------------------------
 @app.post("/api/login-by-email")
 async def email_login(user: LoginUserEmail):
-    try: 
-        db = Session()
+    db = Session()
+    try:
+        # Find user by email
+        existing_user = db.query(User).filter(User.email == user.identifier).first()
+        if not existing_user:
+            raise HTTPException(status_code=404, detail="User with this email does not exist")
 
+        # Check password
+        if not check_password_hash(existing_user.password, user.password):
+            raise HTTPException(status_code=401, detail="Incorrect password")
+
+        return {
+            "message": "Login successful",
+            "user": {
+                "id": existing_user.id,
+                "username": existing_user.username,
+                "email": existing_user.email,
+                "mobile_number": existing_user.mobile_number,
+                "country_id": existing_user.country_id,
+                "region_id": existing_user.region_id,
+                "city_id": existing_user.city_id
+            }
+        }
+
+    except HTTPException as e:
+        raise e
     except Exception as e:
-        print(e)
-    return { "message": user }
+        raise HTTPException(status_code=500, detail=f"Server error: {str(e)}")
+    finally:
+        db.close()
 
 
 # ------------------------
