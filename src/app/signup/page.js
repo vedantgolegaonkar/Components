@@ -93,11 +93,36 @@ export default function SignUp() {
   const onSubmit = async (data) => {
     try {
       setLoading(true);
-      await new Promise((r) => setTimeout(r, 1000));
-      toast.success('Account created successfully!');
+      
+      const payload = {
+        fullName: data.fullName,
+        email: data.email || null,
+        password: data.password || null,
+        phoneNumber: data.mobile || null,
+        country: data.country,
+        state: data.state,
+        city: data.city
+      };
+
+      const response = await fetch ('/api/signup', {
+        method: 'POST',
+        headers: {
+          'Comtent-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      })
+
+      const result = await response.json();
+
+      if(!response.ok) {
+        throw new Error(result.message || "Failed to Sign Up")
+      }
+      
+      toast.success(result.message || 'Account created successfully!');
       reset();
+      router.push('/signin')
     } catch (err) {
-      toast.error('Something went wrong.');
+      toast.error(err.message || 'Something went wrong.');
     } finally {
       setLoading(false);
     }
